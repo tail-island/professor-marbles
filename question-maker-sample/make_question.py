@@ -61,7 +61,7 @@ def get_next_state(test_tubes, action):
     return tuple(test_tubes)
 
 
-# 深さ優先探索します。
+# 深さ優先探索して、すべての盤面を作成します。
 
 stack = deque((answer_test_tubes,))
 
