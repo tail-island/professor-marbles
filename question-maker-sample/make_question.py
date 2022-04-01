@@ -83,7 +83,7 @@ while stack:
 
         stack.append(next_state)
 
-# グラフから、ゴールから最も遠いノードを探します。
+# ゴールから最も遠いノードを探します。
 
 question_test_tubes, path_length = max(nx.shortest_path_length(graph, source=answer_test_tubes).items(), key=second)
 

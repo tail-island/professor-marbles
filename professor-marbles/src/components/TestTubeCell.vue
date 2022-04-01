@@ -1,7 +1,7 @@
 <script>
 import { computed, onMounted, ref } from 'vue'
 
-const MARBLE_COLORS = [ // ビーダマは16色まで。
+const MARBLE_COLORS = [ // ビーダマは256色までですけど、それだと見分けづらそうなので左右に分けて16×16色とします。
   '#000000', '#808080', '#c0c0c0', '#ffffff',
   '#0000ff', '#000080', '#008080', '#008000',
   '#00ff00', '#00ffff', '#ffff00', '#ff0000',
