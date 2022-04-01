@@ -10,8 +10,10 @@ const questionTextArea = ref(null)
 const answerTextArea = ref(null)
 
 const execute = () => {
+  errorMessage.value = ''
+
   const [testTubeSizes, initialMarblesCollection, answerMarblesCollection] = (() => {
-    const lines = questionTextArea.value.value.trim().split(/\n/)
+    const lines = questionTextArea.value.value.split(/\n/)
     let lineNumber = 0
 
     const testTubeCount = parseInt(lines[lineNumber++])

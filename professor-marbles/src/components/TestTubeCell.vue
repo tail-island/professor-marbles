@@ -19,7 +19,7 @@ const marbleLeft = computed(() => props.marble >> 4)
 const marbleRight = computed(() => props.marble & 0xf)
 
 const resizeObserver = new ResizeObserver(_ => {
-  labelVisibility.value = root.value.getBoundingClientRect().height > 32 ? 'visible' : 'hidden'
+  labelVisibility.value = root.value && root.value.getBoundingClientRect().height > 32 ? 'visible' : 'hidden'
 })
 
 onMounted(() => {
