@@ -2,7 +2,7 @@ from collections import deque
 from itertools import product
 
 
-# コードをシンプルにするために、ゲームのルールを抽出しておきます。
+# 保守性を上げるために、ゲームのルールを抽出しておきます。
 class Game:
     def __init__(self, question):
         self.test_tube_sizes, self.initial_test_tubes, self.answer_test_tubes = question

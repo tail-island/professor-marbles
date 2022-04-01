@@ -12,16 +12,15 @@ const MARBLE_COLORS = [ // ビーダマは16色まで。
 <script setup>
 const props = defineProps(['marble', 'size'])
 
+const root = ref(null)
+const labelVisibility = ref('visible')
+
 const marbleLeft = computed(() => props.marble >> 4)
 const marbleRight = computed(() => props.marble & 0xf)
-
-const labelVisibility = ref('visible')
 
 const resizeObserver = new ResizeObserver(_ => {
   labelVisibility.value = root.value.getBoundingClientRect().height > 32 ? 'visible' : 'hidden'
 })
-
-const root = ref(null)
 
 onMounted(() => {
   resizeObserver.observe(root.value)
