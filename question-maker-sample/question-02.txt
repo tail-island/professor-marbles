@@ -1,0 +1,14 @@
+4
+2
+4
+4
+4
+d2 b6
+ca ca d2 b6
+ca
+b6
+b6
+b6 ca d2
+b6 ca d2 ca
+
+
