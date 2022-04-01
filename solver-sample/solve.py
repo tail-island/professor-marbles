@@ -13,7 +13,7 @@ class Game:
     def has_finished(self, test_tubes):
         return test_tubes == self.answer_test_tubes
 
-    def get_leagal_actions(self, test_tubes):
+    def get_legal_actions(self, test_tubes):
         return filter(lambda action: action[0] != action[1],
                       product(filter(lambda i: len(test_tubes[i]) > 0, range(len(test_tubes))),
                               filter(lambda i: len(test_tubes[i]) < self.test_tube_sizes[i], range(len(test_tubes)))))
@@ -67,7 +67,7 @@ def solve(question):
         if game.has_finished(state):
             return actions
 
-        for action in game.get_leagal_actions(state):
+        for action in game.get_legal_actions(state):
             next_state = game.get_next_state(state, action)
 
             if next_state in visited_states:
