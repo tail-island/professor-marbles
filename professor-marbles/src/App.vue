@@ -1,18 +1,61 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Game } from '@/models/game'
+import { range } from '@/models/utility'
 import TestTubes from '@/components/TestTubes.vue'
 
-const game = ref(new Game([1, 2, 3, 4, 5], [[0x01], [0x23], [0x45, 0x67, 0x45], [0x89, 0xab], [0xcd, 0xef]], [[0x01], [0x23, 0x45], [0x45, 0x67], [0x89, 0xab], [0xcd, 0xef]]))
+const game = ref(new Game([], [], []))
+const errorMessage = ref('')
+const questionTextArea = ref(null)
+const answerTextArea = ref(null)
 
-const intervalId = setInterval(() => {
-  if (game.value.hasFinished()) {
-    clearInterval(intervalId)
-  }
+const execute = () => {
+  const [testTubeSizes, initialMarblesCollection, answerMarblesCollection] = (() => {
+    const lines = questionTextArea.value.value.trim().split(/\n/)
+    let lineNumber = 0
 
-  const actions = game.value.getLegalActions()
-  game.value.doAction(actions[Math.floor(Math.random() * actions.length)])
-}, 1000)
+    const testTubeCount = parseInt(lines[lineNumber++])
+
+    return [
+      range(testTubeCount).map(_ => parseInt(lines[lineNumber++])),
+      range(testTubeCount).map(_ => {
+        const line = lines[lineNumber++]
+
+        return line !== '' ? line.split(/ /).map(s => parseInt(s, 16)) : []
+      }),
+      range(testTubeCount).map(_ => {
+        const line = lines[lineNumber++]
+
+        return line !== '' ? line.split(/ /).map(s => parseInt(s, 16)) : []
+      })
+    ]
+  })()
+
+  game.value = new Game(testTubeSizes, initialMarblesCollection, answerMarblesCollection)
+
+  const actions = answerTextArea.value.value.trim().split(/\n/).map(line => line.split(/ /).map(s => parseInt(s)))
+  const interval = Math.max(100, Math.min(1000, 10000 / actions.length))
+
+  setTimeout(function doAction (i) {
+    if (i >= actions.length) {
+      return
+    }
+
+    if (game.value.getLegalActions().every(legalAction => legalAction.toString() !== actions[i].toString())) {
+      errorMessage.value = `解答の${i + 1}行目が不正です。`
+      return
+    }
+
+    game.value.doAction(actions[i])
+
+    setTimeout(doAction, interval, i + 1)
+  }, interval, 0)
+}
+
+onMounted(() => {
+  questionTextArea.value.value = '4\n4\n2\n4\n2\n18 7a 7a 07\n18\n07\n18 07\n07 7a 18 18\n07 18\n\n07 7a'
+  answerTextArea.value.value = '0 1\n1 2\n0 1\n3 0\n2 3\n1 2\n3 2\n0 3\n0 1\n2 0\n3 2\n0 3\n2 0'
+})
 </script>
 
 <template>
@@ -20,22 +63,22 @@ const intervalId = setInterval(() => {
     ビーダマ教授
   </div>
   <div class="question">
-    <textarea>question</textarea>
+    <textarea ref="questionTextArea"></textarea>
   </div>
   <div class="goal">
     <TestTubes :testTubes="game.answerTestTubes" />
   </div>
   <div class="answer">
-    <textarea>answer</textarea>
+    <textarea ref="answerTextArea">answer</textarea>
   </div>
   <div class="command">
-    <button>実行</button>
+    <button @click="execute">実行</button>
   </div>
   <div class="board">
     <TestTubes :testTubes="game.testTubes" />
   </div>
   <div class="status">
-    count: {{ game.actionCount }}
+    count: {{ game.actionCount }}&nbsp;&nbsp;<span class="error">{{ errorMessage }}</span>
   </div>
 </template>
 
@@ -95,5 +138,9 @@ const intervalId = setInterval(() => {
   grid-column: 1 / 4;
   grid-row: 5;
   text-align: center;
+}
+
+.error {
+  color: #ff0000;
 }
 </style>

@@ -1,15 +1,11 @@
-import sys
-
 from collections import deque
 from itertools import product
 
 
 # コードをシンプルにするために、ゲームのルールを抽出しておきます。
 class Game:
-    def __init__(self, test_tube_sizes, initial_test_tubes, answer_test_tubes):
-        self.test_tube_sizes = test_tube_sizes
-        self.initial_test_tubes = initial_test_tubes
-        self.answer_test_tubes = answer_test_tubes
+    def __init__(self, question):
+        self.test_tube_sizes, self.initial_test_tubes, self.answer_test_tubes = question
 
     def get_initial_state(self):
         return self.initial_test_tubes
@@ -49,18 +45,19 @@ def read_question():
 
     def read_test_tubes(test_tube_count):
         for _ in range(test_tube_count):
-            yield tuple(map(int, input().split()))
+            yield tuple(map(lambda marble: int(marble, 16), input().split()))
 
     test_tube_count = int(input())
-    test_tube_sizes = tuple(read_test_tube_sizes(test_tube_count))
-    initial_test_tubes = tuple(read_test_tubes(test_tube_count))
-    answer_test_tubes = tuple(read_test_tubes(test_tube_count))
 
-    return test_tube_sizes, initial_test_tubes, answer_test_tubes
+    return (tuple(read_test_tube_sizes(test_tube_count)),
+            tuple(read_test_tubes(test_tube_count)),
+            tuple(read_test_tubes(test_tube_count)))
 
 
 # 幅優先探索で問題をときます。
-def solve(game):
+def solve(question):
+    game = Game(question)
+
     queue = deque((((), game.get_initial_state()),))
     visited_states = set((game.get_initial_state(),))
 
@@ -83,12 +80,7 @@ def solve(game):
 # 解答を出力します。
 def write_answer(actions):
     for from_index, to_index in actions:
-        print(f'{from_index},{to_index}')
+        print(f'{from_index} {to_index}')
 
 
-answer = solve(Game(*read_question()))
-
-print(len(answer), file=sys.stderr)
-print(answer, file=sys.stderr)
-
-write_answer(answer)
+write_answer(solve(read_question()))

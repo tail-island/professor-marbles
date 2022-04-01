@@ -1,28 +1,23 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import TestTube from '@/components/TestTube.vue'
 import { range } from '@/models/utility'
 
 const props = defineProps(['testTubes'])
 
-const cellSize = ref(1)
+const root = ref(null)
+const width = ref(0)
+const height = ref(0)
 
-const testTubeXs = ref(Array(16).fill(1)) // マジック・ナンバーが入っちゃってごめんなさい。
-const testTubeYs = ref(Array(16).fill(1)) // 同上。
+const maxTestTubeSize = computed(() => Math.max(...props.testTubes.map(testTube => testTube.size)))
+const cellSize = computed(() => Math.min(width.value / props.testTubes.length, height.value / maxTestTubeSize.value))
+const testTubeXs = computed(() => range(props.testTubes.length).map(i => i * width.value / props.testTubes.length + (width.value / props.testTubes.length - cellSize.value) / 2))
+const testTubeYs = computed(() => range(props.testTubes.length).map(i => (height.value - maxTestTubeSize.value * cellSize.value) / 2 + (maxTestTubeSize.value - props.testTubes[i].size) * cellSize.value))
 
 const resizeObserver = new ResizeObserver(_ => {
-  const width = root.value.getBoundingClientRect().width - 2
-  const height = root.value.getBoundingClientRect().height - 2
-
-  const maxTestTubeSize = Math.max(...props.testTubes.map(testTube => testTube.size))
-
-  cellSize.value = Math.min(width / props.testTubes.length, height / maxTestTubeSize)
-
-  testTubeXs.value = range(props.testTubes.length).map(i => i * width / props.testTubes.length + (width / props.testTubes.length - cellSize.value) / 2)
-  testTubeYs.value = range(props.testTubes.length).map(i => (height - maxTestTubeSize * cellSize.value) / 2 + (maxTestTubeSize - props.testTubes[i].size) * cellSize.value)
+  width.value = root.value.getBoundingClientRect().width - 2
+  height.value = root.value.getBoundingClientRect().height - 2
 })
-
-const root = ref(null)
 
 onMounted(() => {
   resizeObserver.observe(root.value)
