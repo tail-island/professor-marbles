@@ -93,10 +93,7 @@ def get_answer_test_tubes(lines, test_tube_count):
 lines = read_lines()
 
 test_tube_count = get_test_tube_count(lines)
-test_tube_sizes = get_test_tube_sizes(lines, test_tube_count)
-initial_test_tubes = get_initial_test_tubes(lines, test_tube_count)
-answer_test_tubes = get_answer_test_tubes(lines, test_tube_count)
 
-print(test_tube_sizes)
-print(initial_test_tubes)
-print(answer_test_tubes)
+print(get_test_tube_sizes(lines, test_tube_count))
+print(get_initial_test_tubes(lines, test_tube_count))
+print(get_answer_test_tubes(lines, test_tube_count))
