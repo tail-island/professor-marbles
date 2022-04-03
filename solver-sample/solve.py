@@ -74,7 +74,7 @@ def solve(question):
                 continue
 
             visited_states.add(next_state)
-            queue.append(((actions + (action,)), next_state))
+            queue.append((actions + (action,), next_state))
 
 
 # 解答を出力します。
