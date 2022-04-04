@@ -1,0 +1,88 @@
+# ビーダマ教授
+
+2022年度プログラミング・コンクール課題2では、[Prof. Marbles](https://hutter-trade.com/en/product-range/product/prof-marbles/)に似たパズルを説いていただきます。
+
+![Prof. Marbles]()
+
+## ルール
+
+試験管の中にビーダマが入っています。試験管から試験管にビーダマを移動させて、手本と同じ状態にしてください。
+
+* ビーダマの移動は、移動元の試験管が空になるか、移動先の試験管が満タンになると止まります。
+  ![]()
+* 移動元の試験管から先に出たビーダマが、先に移動先の試験管に入ります。そのため、移動先の試験管における順序は逆になります。
+  ![]()
+
+## 入力データ
+
+以下に、入力データの具体例を示します（`//`以降はコメントです。入力データに含めないようにしてください）。
+
+~~~
+3         // 試験管の数
+1         // 試験管0の大きさ。試験管0にはビーダマが1つしか入らない
+4         // 試験管1の大きさ。試験管1にはビーダマが4つまで入れられる
+1         // 試験管2の大きさ。試験管2にはビーダマが1つしか入らない
+0a        // 初期状態で試験管0に入っているビーダマ。0a（10進数での10）番の色のビーダマが1つだけ入っている。ビーダマの色は16進数2桁
+5b 6c 5b  // 初期状態で試験管1に入っているビーダマ。下から順に、5b（10進数での91）番の色、6c（10進数での108）番の色、5b番の色のビーダマが入っている
+          // 初期状態で試験管2に入っているビーダマ。試験管は空でビーダマは入っていない
+5b        // 手本で試験管0に入っているビーダマ。5b版の色のビーダマが１つだけ入っている
+5b 6c 0a  // 手本で試験管1に入っているビーダマ。下から順に、5b番の色、6c版の色、0a版の色のビーダマが入っている
+          // 手本で試験管2に入っているビーダマ。試験管は空でビーダマは入っていない
+~~~
+
+この入力データでの試験管の初期状態は以下になります。
+
+![]()
+
+手本の状態は以下になります。
+
+![]()
+
+以下に、[W3CのEBNF（Extended Backus-Naur Form）](http://www.w3c.org/TR/REC-xml#sec-notation)での入力データのフォーマットを示します。
+
+~~~ebnf
+Input                    ::= TestTubeCount NewLine TestTubeSizes NewLine InitialMarblesCollection NewLine AnswerMarblesCollection NewLine?
+
+TestTubeCount            ::= PositiveInteger
+
+TestTubeSizes            ::= TubeSize (NewLine TubeSize)*
+
+TubeSize                 ::= PositiveInteger
+
+InitialMarblesCollection ::= MarblesCollection (NewLine MarblesCollection)*
+AnswerMarblesCollection  ::= MarblesCollection (NewLine MarblesCollection)*
+
+MarblesCollection        ::= (Marble (Space Marble)*)?
+
+Marble                   ::= HexDigit HexDigit
+
+Space                    ::= ' '
+NewLine                  ::= #x0D | #x0A | (#x0D #x0A)
+PositiveInteger          ::= DigitStart (Digit)*
+DigitStart               ::= '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+Digit                    ::= '0' | DigitStart
+HexDigit                 ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | Digit
+~~~
+
+上のフォーマットに示されていないルールを、以下に示します。
+
+* 試験管の数は64まで
+* 試験管の大きさは64まで
+* ビーダマの色は00〜ff（0〜255）の範囲
+* ビーダマを移動させることで手本の状態にできなくても問題ありません
+
+最後の「手本にならなくてもよい」ルールを補足します。以下の初期状態からどれだけビーダマを移動させても
+
+![]()
+
+以下の手本の状態にはなりませんが、このような入力データでも問題ありません。
+
+![]()
+
+## 評価方法
+
+手本と同じ状態にできる場合は、ビーダマを移動させた回数が少ないほど良い評価とします。
+
+手本と同じ状態にできない場合は、
+
+ビーダマには色ごとに0〜255の番号がついています。

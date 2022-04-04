@@ -76,6 +76,8 @@ def solve(question):
             visited_states.add(next_state)
             queue.append((actions + (action,), next_state))
 
+    return ()  # 手本の状態にできない問題の場合の考慮をしていないので、何もしないことにします。
+
 
 # 解答を出力します。
 def write_answer(actions):
