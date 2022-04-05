@@ -1,1 +1,0 @@
-pandoc -f gfm --standalone --to html5 --css https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css -H ./res/github-markdown-h.html -B ./res/github-markdown-b.html -A ./res/github-markdown-a.html -V pagetitle="ビーダマ教授 - ルール" -V lang=ja -o ../rule.html rule.md
