@@ -73,9 +73,9 @@ def get_initial_test_tubes(lines, test_tube_count):
     return tuple(test_tubes)
 
 
-def get_answer_test_tubes(lines, test_tube_count):
+def get_goal_test_tubes(lines, test_tube_count):
     if not len(lines) >= 1 + test_tube_count + test_tube_count + test_tube_count:
-        report_error('試験管の解答の状態が見つかりません。')
+        report_error('試験管のゴールの状態が見つかりません。')
 
     test_tubes = []
 
@@ -83,7 +83,7 @@ def get_answer_test_tubes(lines, test_tube_count):
         line = lines[1 + test_tube_count + test_tube_count + i]
 
         if not re.fullmatch(r'(|[a-f\d]{2}( [a-f\d]{2})*)', line):
-            report_error(f'{i + 1}番目の試験管の解答の状態が不正です。試験管の解答の状態は空白区切りの16進数（a〜fは小文字）で記述してください。')
+            report_error(f'{i + 1}番目の試験管のゴールの状態が不正です。試験管のゴールの状態は空白区切りの16進数（a〜fは小文字）で記述してください。')
 
         test_tubes.append(tuple(map(lambda s: int(s, 16), line.split())))
 
@@ -96,4 +96,4 @@ test_tube_count = get_test_tube_count(lines)
 
 print(get_test_tube_sizes(lines, test_tube_count))
 print(get_initial_test_tubes(lines, test_tube_count))
-print(get_answer_test_tubes(lines, test_tube_count))
+print(get_goal_test_tubes(lines, test_tube_count))

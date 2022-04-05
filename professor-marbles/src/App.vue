@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Game } from '@/models/game'
 import { range } from '@/models/utility'
 import TestTubes from '@/components/TestTubes.vue'
@@ -8,6 +8,21 @@ const game = ref(new Game([], [], []))
 const errorMessage = ref('')
 const questionTextArea = ref(null)
 const answerTextArea = ref(null)
+
+const loss = computed(() => {
+  let result = 0
+
+  for (const i of range(game.value.answerTestTubes.length)) {
+    for (const j of range(game.value.answerTestTubes[i].size)) {
+      const x = game.value.testTubes[i].marbles[j] >= 0 ? game.value.testTubes[i].marbles[j] : -255
+      const y = game.value.answerTestTubes[i].marbles[j] >= 0 ? game.value.answerTestTubes[i].marbles[j] : -255
+
+      result += Math.pow(x - y, 2)
+    }
+  }
+
+  return (result / game.value.answerTestTubes.reduce((acc, x) => acc + x.size, 0)).toFixed(3)
+})
 
 const execute = () => {
   errorMessage.value = ''
@@ -36,7 +51,7 @@ const execute = () => {
   game.value = new Game(testTubeSizes, initialMarblesCollection, answerMarblesCollection)
 
   const actions = answerTextArea.value.value.trim().split(/\n/).map(line => line.split(/ /).map(s => parseInt(s)))
-  const interval = Math.max(100, Math.min(1000, 10000 / actions.length))
+  const interval = Math.max(100, Math.min(1000, 9500 / actions.length))
 
   setTimeout(function doAction (i) {
     if (i >= actions.length) {
@@ -51,7 +66,7 @@ const execute = () => {
     game.value.doAction(actions[i])
 
     setTimeout(doAction, interval, i + 1)
-  }, interval, 0)
+  }, interval + 500, 0)
 }
 
 onMounted(() => {
@@ -80,7 +95,7 @@ onMounted(() => {
     <TestTubes :testTubes="game.testTubes" />
   </div>
   <div class="status">
-    count: {{ game.actionCount }}&nbsp;&nbsp;<span class="error">{{ errorMessage }}</span>
+    誤差: {{ loss }}, 手数: {{ game.actionCount }}&nbsp;&nbsp;<span class="error">{{ errorMessage }}</span>
   </div>
 </template>
 

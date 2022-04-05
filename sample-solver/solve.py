@@ -5,36 +5,36 @@ from itertools import product
 # 保守性を上げるために、ゲームのルールを抽出しておきます。
 class Game:
     def __init__(self, question):
-        self.test_tube_sizes, self.initial_test_tubes, self.answer_test_tubes = question
+        self.test_tube_sizes, self.initial_marbles_collection, self.goal_marbles_collection = question
 
     def get_initial_state(self):
-        return self.initial_test_tubes
+        return self.initial_marbles_collection
 
-    def has_finished(self, test_tubes):
-        return test_tubes == self.answer_test_tubes
+    def is_goal(self, marbles_collection):
+        return marbles_collection == self.goal_marbles_collection
 
-    def get_legal_actions(self, test_tubes):
+    def get_legal_actions(self, marbles_collection):
         return filter(lambda action: action[0] != action[1],
-                      product(filter(lambda i: len(test_tubes[i]) > 0, range(len(test_tubes))),
-                              filter(lambda i: len(test_tubes[i]) < self.test_tube_sizes[i], range(len(test_tubes)))))
+                      product(filter(lambda i: len(marbles_collection[i]) > 0, range(len(marbles_collection))),
+                              filter(lambda i: len(marbles_collection[i]) < self.test_tube_sizes[i], range(len(marbles_collection)))))
 
-    def get_next_state(self, test_tubes, action):
+    def get_next_state(self, marbles_collection, action):
         # タプルは変更できないのでリストに変換して、リストはハッシュ化できないのでタプルに変換しています。。。
 
         from_index, to_index = action
 
-        test_tubes = list(test_tubes)
+        marbles_collection = list(marbles_collection)
 
-        from_test_tube = list(test_tubes[from_index])
-        to_test_tube = list(test_tubes[to_index])
+        from_marbles = list(marbles_collection[from_index])
+        to_marbles = list(marbles_collection[to_index])
 
-        while len(from_test_tube) > 0 and len(to_test_tube) < self.test_tube_sizes[to_index]:
-            to_test_tube.append(from_test_tube.pop())
+        while len(from_marbles) > 0 and len(to_marbles) < self.test_tube_sizes[to_index]:
+            to_marbles.append(from_marbles.pop())
 
-        test_tubes[to_index] = tuple(to_test_tube)
-        test_tubes[from_index] = tuple(from_test_tube)
+        marbles_collection[to_index] = tuple(to_marbles)
+        marbles_collection[from_index] = tuple(from_marbles)
 
-        return tuple(test_tubes)
+        return tuple(marbles_collection)
 
 
 # 問題を読み込みます。
@@ -43,15 +43,15 @@ def read_question():
         for _ in range(test_tube_count):
             yield int(input())
 
-    def read_test_tubes(test_tube_count):
+    def read_marbles_collection(test_tube_count):
         for _ in range(test_tube_count):
             yield tuple(map(lambda marble: int(marble, 16), input().split()))
 
     test_tube_count = int(input())
 
     return (tuple(read_test_tube_sizes(test_tube_count)),
-            tuple(read_test_tubes(test_tube_count)),
-            tuple(read_test_tubes(test_tube_count)))
+            tuple(read_marbles_collection(test_tube_count)),
+            tuple(read_marbles_collection(test_tube_count)))
 
 
 # 幅優先探索で問題をときます。
@@ -64,7 +64,7 @@ def solve(question):
     while queue:
         actions, state = queue.popleft()
 
-        if game.has_finished(state):
+        if game.is_goal(state):
             return actions
 
         for action in game.get_legal_actions(state):
