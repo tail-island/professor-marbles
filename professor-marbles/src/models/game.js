@@ -1,8 +1,8 @@
 import { CartesianProduct } from 'js-combinatorics'
 
 export class Game {
-  constructor (testTubeSizes, initialMarblesCollection, answerMarblesCollection) {
-    [this.testTubes, this.answerTestTubes] = [initialMarblesCollection, answerMarblesCollection].map(marblesCollection =>
+  constructor (testTubeSizes, initialMarblesCollection, goalMarblesCollection) {
+    [this.testTubes, this.goalTestTubes] = [initialMarblesCollection, goalMarblesCollection].map(marblesCollection =>
       marblesCollection.map((marbles, i) => ({ marbles: marbles, size: testTubeSizes[i] }))
     )
 
@@ -27,6 +27,6 @@ export class Game {
   hasFinished () {
     const testTubesToString = testTubes => `[${testTubes.map(testTube => `[${testTube.marbles.toString()}]`).toString()}]`
 
-    return testTubesToString(this.testTubes) === testTubesToString(this.answerTestTubes)
+    return testTubesToString(this.testTubes) === testTubesToString(this.goalTestTubes)
   }
 }

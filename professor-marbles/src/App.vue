@@ -12,16 +12,20 @@ const answerTextArea = ref(null)
 const loss = computed(() => {
   let result = 0
 
-  for (const i of range(game.value.answerTestTubes.length)) {
-    for (const j of range(game.value.answerTestTubes[i].size)) {
-      const x = game.value.testTubes[i].marbles[j] >= 0 ? game.value.testTubes[i].marbles[j] : -255
-      const y = game.value.answerTestTubes[i].marbles[j] >= 0 ? game.value.answerTestTubes[i].marbles[j] : -255
+  if (game.value.goalTestTubes.length === 0) {
+    return 0
+  }
+
+  for (const i of range(game.value.goalTestTubes.length)) {
+    for (const j of range(game.value.goalTestTubes[i].size)) {
+      const x = j < game.value.testTubes[i].marbles.length ? game.value.testTubes[i].marbles[j] : -255
+      const y = j < game.value.goalTestTubes[i].marbles.length ? game.value.goalTestTubes[i].marbles[j] : -255
 
       result += Math.pow(x - y, 2)
     }
   }
 
-  return (result / game.value.answerTestTubes.reduce((acc, x) => acc + x.size, 0)).toFixed(3)
+  return (result / game.value.goalTestTubes.reduce((acc, x) => acc + x.size, 0)).toFixed(3)
 })
 
 const execute = () => {
@@ -83,7 +87,7 @@ onMounted(() => {
     <textarea ref="questionTextArea"></textarea>
   </div>
   <div class="goal">
-    <TestTubes :testTubes="game.answerTestTubes" />
+    <TestTubes :testTubes="game.goalTestTubes" />
   </div>
   <div class="answer">
     <textarea ref="answerTextArea">answer</textarea>
