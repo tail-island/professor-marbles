@@ -13,7 +13,7 @@ const loss = computed(() => {
   let result = 0
 
   if (game.value.goalTestTubes.length === 0) {
-    return 0
+    return (0).toFixed(3)
   }
 
   for (const i of range(game.value.goalTestTubes.length)) {
