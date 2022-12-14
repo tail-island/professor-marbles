@@ -48,7 +48,7 @@ def get_test_tube_sizes(lines, test_tube_count):
 
         test_tube_size = int(line)
 
-        if not (1 <= test_tube_size <= 32):
+        if not (1 <= test_tube_size <= 64):
             report_error(f'{i + 1}番目の試験管のサイズが不正です。試験管のサイズは1〜64にしてください。')
 
         test_tube_sizes.append(test_tube_size)
