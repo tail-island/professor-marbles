@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <random>
 #include <ranges>
 #include <vector>
 
@@ -15,24 +14,34 @@ struct Action {
   int size;
 };
 
+using Tube = std::vector<std::uint8_t>;
+
+inline auto operator==(const Tube &tube_1, const Tube &tube_2) noexcept {
+  if (std::size(tube_1) != std::size(tube_2)) {
+    return false;
+  }
+
+  for (const auto &i : std::views::iota(0, static_cast<int>(std::size(tube_1)))) {
+    if (tube_1[i] != tube_2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 struct State {
-  std::vector<std::vector<std::uint8_t>> tubes;
+  std::vector<Tube> tubes;
 };
 
-inline auto operator==(const State& state_1, const State& state_2) noexcept {
+inline auto operator==(const State &state_1, const State &state_2) noexcept {
   if (std::size(state_1.tubes) != std::size(state_2.tubes)) {
     return false;
   }
 
-  for (const auto &i: std::views::iota(0, static_cast<int>(std::size(state_1.tubes)))) {
-    if (std::size(state_1.tubes[i]) != std::size(state_2.tubes[i])) {
+  for (const auto &i : std::views::iota(0, static_cast<int>(std::size(state_1.tubes)))) {
+    if (state_1.tubes[i] != state_2.tubes[i]) {
       return false;
-    }
-
-    for (const auto &j: std::views::iota(0, static_cast<int>(std::size(state_1.tubes[i])))) {
-      if (state_1.tubes[i][j] != state_2.tubes[i][j]) {
-        return false;
-      }
     }
   }
 
@@ -44,14 +53,25 @@ inline auto operator==(const State& state_1, const State& state_2) noexcept {
 namespace std {
 
 template <>
+struct hash<problem_maker::Tube> {
+  auto operator()(const problem_maker::Tube &tube) const noexcept {
+    auto result = static_cast<std::size_t>(0);
+
+    for (const auto &marble : tube) {
+      boost::hash_combine(result, marble);
+    }
+
+    return result;
+  }
+};
+
+template <>
 struct hash<problem_maker::State> {
-  std::size_t operator()(const problem_maker::State &state) const noexcept {
+  auto operator()(const problem_maker::State &state) const noexcept {
     auto result = static_cast<std::size_t>(0);
 
     for (const auto &tube : state.tubes) {
-      for (const auto &marble : tube) {
-        boost::hash_combine(result, marble);
-      }
+      boost::hash_combine(result, hash<problem_maker::Tube>{}(tube));
     }
 
     return result;
@@ -67,7 +87,7 @@ class Game {
   State _initial_state;
 
 public:
-  Game(const std::vector<int> &tube_sizes, const std::vector<std::vector<std::uint8_t>> &tubes) noexcept : _tube_sizes{tube_sizes}, _initial_state{tubes} {
+  Game(const std::vector<int> &tube_sizes, const std::vector<Tube> &tubes) noexcept : _tube_sizes{tube_sizes}, _initial_state{tubes} {
     ;
   }
 
@@ -114,6 +134,9 @@ public:
       next_state.tubes[action.to].emplace_back(next_state.tubes[action.from].back());
       next_state.tubes[action.from].pop_back();
     }
+
+    next_state.tubes[action.to].shrink_to_fit();
+    next_state.tubes[action.from].shrink_to_fit();
 
     return next_state;
   }
